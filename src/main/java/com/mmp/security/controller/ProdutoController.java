@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -51,5 +52,27 @@ public class ProdutoController {
 		service.delete(id);
 		
 		return ResponseEntity.status(HttpStatus.OK).body("Produto deletado com sucesso!");
+	}
+	
+	@GetMapping("/{id}")
+	public ResponseEntity<Object> getById(@PathVariable(value = "id") UUID id){
+		Optional<ProdutoModel> produtoOptional = service.getById(id);
+		if(!produtoOptional.isPresent()) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Produto não encontrado!");
+		}
+		return ResponseEntity.status(HttpStatus.OK).body(produtoOptional.get());
+	}
+	
+	@PutMapping("/{id}")
+	public ResponseEntity<Object> update(@PathVariable(value = "id") UUID id, @RequestBody ProdutoDto produtoDto){
+		Optional<ProdutoModel> produtoOptional = service.getById(id);
+		if(!produtoOptional.isPresent()) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Produto não encontrado!");
+		}
+		ProdutoModel produto = produtoOptional.get();
+		produto.setNome(produtoDto.getNome());
+		produto.setPreco(produtoDto.getPreco());
+		
+		return ResponseEntity.status(HttpStatus.OK).body(service.create(produto));
 	}
 }
