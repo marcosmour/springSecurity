@@ -1,5 +1,6 @@
 package com.mmp.security.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -10,6 +11,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
+	
+	@Autowired
+	private UserDetailsServiceImpl userDetailsService;
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception{
@@ -17,10 +21,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
 	}
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth)throws Exception {
-		auth.inMemoryAuthentication()
-		.withUser("marcos")
-		.password(passwordEncoder().encode("607080"))
-		.roles("ADMIN");
+		auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
 	}
 	
 	@Bean
